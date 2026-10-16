@@ -1,108 +1,74 @@
-# Назва проєкту
 
 import tkinter as tk
-from tkinter import messagebox
+import random
 
-# Налаштування гри
 score = 0
-clicks = 0
-bonus = 1
+time_left = 30
 
-def click_bomb():
-    global score, clicks, bonus
+def move_button():
+    x = random.randint(20, 350)
+    y = random.randint(80, 300)
+    button.place(x=x, y=y)
 
-    clicks += 1
-    score += bonus
+def catch():
+    global score
+    score += 1
+    score_label.config(text=f"Очки: {score}")
+    move_button()
 
-    if clicks % 10 == 0:
-        bonus += 1
-        messagebox.showinfo(
-            "Бонус!",
-            f"Тепер за клік ти отримуєш {bonus} очок!"
-        )
+def timer():
+    global time_left
+    time_left -= 1
+    time_label.config(text=f"Час: {time_left}")
 
-    score_label.config(text=f"💣 Очки: {score}")
-    clicks_label.config(text=f"Кліки: {clicks}")
+    if time_left > 0:
+        root.after(1000, timer)
+    else:
+        button.place_forget()
+        result_label.config(text=f"Гру завершено! Очки: {score}")
 
-def reset_game():
-    global score, clicks, bonus
-
-    score = 0
-    clicks = 0
-    bonus = 1
-
-    score_label.config(text="💣 Очки: 0")
-    clicks_label.config(text="Кліки: 0")
-    bonus_label.config(text="Бонус за клік: 1")
-
-# Створення вікна
 root = tk.Tk()
-root.title("Bomb Clicker")
-root.geometry("400x450")
-root.configure(bg="#202436")
+root.title("Лови квадрат")
+root.geometry("400x400")
 root.resizable(False, False)
+root.config(bg="lightblue")
 
 title = tk.Label(
     root,
-    text="💣 BOMB CLICKER 💣",
-    font=("Arial", 22, "bold"),
-    fg="#ffcc33",
-    bg="#202436"
+    text="ЛОВИ КВАДРАТ!",
+    font=("Arial", 20, "bold"),
+    bg="lightblue"
 )
-title.pack(pady=20)
+title.pack(pady=10)
 
 score_label = tk.Label(
+    root, text="Очки: 0",
+    font=("Arial", 14), bg="lightblue"
+)
+score_label.pack()
+
+time_label = tk.Label(
+    root, text="Час: 30",
+    font=("Arial", 14), bg="lightblue"
+)
+time_label.pack()
+
+button = tk.Button(
     root,
-    text="💣 Очки: 0",
-    font=("Arial", 18, "bold"),
+    text="ЛОВИ!",
+    bg="red",
     fg="white",
-    bg="#202436"
+    font=("Arial", 12, "bold"),
+    command=catch
 )
-score_label.pack(pady=10)
+button.place(x=150, y=150)
 
-clicks_label = tk.Label(
-    root,
-    text="Кліки: 0",
-    font=("Arial", 14),
-    fg="#bfc9e0",
-    bg="#202436"
+result_label = tk.Label(
+    root, text="",
+    font=("Arial", 14, "bold"),
+    bg="lightblue"
 )
-clicks_label.pack(pady=5)
+result_label.pack(side="bottom", pady=15)
 
-bonus_label = tk.Label(
-    root,
-    text="Бонус за клік: 1",
-    font=("Arial", 14),
-    fg="#66ff99",
-    bg="#202436"
-)
-bonus_label.pack(pady=5)
-
-bomb_button = tk.Button(
-    root,
-    text="💣",
-    font=("Arial", 65),
-    command=click_bomb,
-    bg="#343c58",
-    fg="white",
-    activebackground="#515e85",
-    relief="flat",
-    cursor="hand2"
-)
-bomb_button.pack(pady=20)
-
-reset_button = tk.Button(
-    root,
-    text="🔄 Почати заново",
-    font=("Arial", 13, "bold"),
-    command=reset_game,
-    bg="#e74c3c",
-    fg="white",
-    activebackground="#c0392b",
-    relief="flat",
-    padx=15,
-    pady=8
-)
-reset_button.pack(pady=10)
-
+root.after(1000, timer)
 root.mainloop()
